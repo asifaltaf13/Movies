@@ -18,6 +18,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -28,20 +30,23 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.asifaltaf.movies.R
+import com.asifaltaf.movies.ui.home.HomeViewModel
 import com.asifaltaf.movies.ui.theme.Phosphate
 import com.asifaltaf.movies.ui.util.Tags
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun MainAppBar(
-    searchQuery: String,
     isSearchExpanded: Boolean,
     toggleShowDialog: () -> Unit,
     toggleSearchBar: () -> Unit,
-    changeSearchQuery: (searchQuery: String) -> Unit,
     searchMovies: () -> Unit,
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
+
+    val textFieldEntry by viewModel.textFieldEntry.collectAsState()
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -92,9 +97,9 @@ fun MainAppBar(
                         .padding(16.dp)
                         .focusRequester(focusRequester),
                     shape = RoundedCornerShape(64.dp),
-                    value = searchQuery,
+                    value = textFieldEntry,
                     onValueChange = {
-                        changeSearchQuery(it)
+                        viewModel.changeTextFieldEntry(it)
                     },
                     label = { Text(text = stringResource(R.string.omdb_search)) },
                     placeholder = { Text(text = stringResource(R.string.movie_title_placeholder)) },
@@ -112,7 +117,9 @@ fun MainAppBar(
                     trailingIcon = {
                         IconButton(
                             modifier = Modifier.testTag(Tags.SearchAppBarSearch),
-                            onClick = { searchMovies() }) {
+                            onClick = {
+                                searchMovies()
+                            }) {
                             Icon(
                                 Icons.Outlined.Search,
                                 contentDescription = stringResource(R.string.search),

@@ -23,9 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -54,11 +51,9 @@ fun HomeScreen(
     val searchState by viewModel.searchState.collectAsState()
     val toastMessage by viewModel.toastMessage.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val showDialog by viewModel.showDialog.collectAsState()
     val isSearchExpanded by viewModel.isSearchExpanded.collectAsState()
-    val searchQuery by viewModel.searchQuery.collectAsState()
     val movies by viewModel.moviesFlow.collectAsState()
-
-    var showDialog by remember { mutableStateOf(false) }
 
     val systemUiController = rememberSystemUiController()
     systemUiController.setSystemBarsColor(MaterialTheme.colorScheme.surface)
@@ -70,11 +65,9 @@ fun HomeScreen(
         topBar = {
             Column {
                 MainAppBar(
-                    searchQuery = searchQuery,
                     isSearchExpanded = isSearchExpanded,
-                    toggleShowDialog = { showDialog = !showDialog },
+                    toggleShowDialog = viewModel::toggleShowDialog,
                     toggleSearchBar = viewModel::toggleSearchBar,
-                    changeSearchQuery = viewModel::changeSearchQuery,
                     searchMovies = viewModel::searchMovies,
                 )
 
@@ -139,7 +132,8 @@ fun HomeScreen(
         DeleteAllAlertDialog(
             context = context,
             onConfirm = viewModel::deleteMovies,
-            onDismiss = { showDialog = false })
+            onDismiss = viewModel::toggleShowDialog
+        )
     }
 
     if (!toastMessage.isNullOrEmpty()) {

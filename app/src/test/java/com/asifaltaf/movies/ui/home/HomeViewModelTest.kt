@@ -48,7 +48,7 @@ class HomeViewModelTest {
                 OmdbSearch("False", "True", generateMovies(10), "30"))
             )
         val sut = HomeViewModel(repository)
-        sut.changeSearchQuery(searchQuery)
+        sut.changeTextFieldEntry(searchQuery)
 
         sut.searchMovies()
         testDispatcher.scheduler.advanceUntilIdle()
@@ -65,7 +65,7 @@ class HomeViewModelTest {
         Mockito.`when`(repository.loadMovies(searchQuery, page))
             .thenReturn(Result.failure(Exception("Error")))
         val sut = HomeViewModel(repository)
-        sut.changeSearchQuery(searchQuery)
+        sut.changeTextFieldEntry(searchQuery)
 
         sut.searchMovies()
         testDispatcher.scheduler.advanceUntilIdle()
@@ -84,7 +84,7 @@ class HomeViewModelTest {
         Mockito.`when`(repository.loadMovies(searchQuery, page))
             .thenReturn(Result.failure(Exception("Error")))
         val sut = HomeViewModel(repository)
-        sut.changeSearchQuery(searchQuery)
+        sut.changeTextFieldEntry(searchQuery)
 
         sut.searchMovies()
         testDispatcher.scheduler.advanceUntilIdle()

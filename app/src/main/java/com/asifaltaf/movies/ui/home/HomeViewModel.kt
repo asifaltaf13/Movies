@@ -25,18 +25,22 @@ class HomeViewModel
 
     private val _searchState = MutableStateFlow(SearchState())
     private val _searchQuery = MutableStateFlow("")
+    private val _textFieldEntry = MutableStateFlow("")
     private val _isLoading = MutableStateFlow(false)
+    private val _showDialog = MutableStateFlow(false)
     private val _isSearchExpanded = MutableStateFlow(false)
     private val _toastMessage: MutableStateFlow<String?> = MutableStateFlow(null)
 
     val searchState = _searchState.asStateFlow()
-    val searchQuery = _searchQuery.asStateFlow()
+    private val searchQuery = _searchQuery.asStateFlow()
+    val textFieldEntry = _textFieldEntry.asStateFlow()
     val isLoading = _isLoading.asStateFlow()
+    val showDialog = _showDialog.asStateFlow()
     val isSearchExpanded = _isSearchExpanded.asStateFlow()
     val toastMessage = _toastMessage.asStateFlow()
 
-    fun changeSearchQuery(value: String) {
-        _searchQuery.value = value
+    fun changeTextFieldEntry(value: String) {
+        _textFieldEntry.value = value
     }
 
     fun clearToastMessage() {
@@ -48,6 +52,7 @@ class HomeViewModel
     }
 
     fun searchMovies() {
+        changeSearchQuery(textFieldEntry.value)
         deleteMovies()
         updateSearchState(page = 1, totalResults = 0)
         loadMovies()
@@ -58,8 +63,16 @@ class HomeViewModel
         loadMovies()
     }
 
+    fun toggleShowDialog() {
+        _showDialog.value = !showDialog.value
+    }
+
     fun toggleSearchBar() {
         _isSearchExpanded.value = !isSearchExpanded.value
+    }
+
+    private fun changeSearchQuery(value: String) {
+        _searchQuery.value = value
     }
 
     private fun loadMovies() {
