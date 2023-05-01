@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">Movies</string>
+    <string name="poster">Poster</string>
+    <string name="delete_all_records">Delete all records</string>
+    <string name="clear_text">Clear text</string>
+    <string name="search">Search</string>
+    <string name="no_results">No results</string>
+    <string name="load_more_entries">Load more entries</string>
+    <string name="showing_entries">Showing %1$d of %2$d entries</string>
+    <string name="delete_all_loaded_movies">Delete all loaded movies?</string>
+    <string name="all_loaded_movies_deleted">All loaded movies deleted.</string>
+    <string name="yes">Yes</string>
+    <string name="omdb_search">OMDb Search</string>
+    <string name="movie_title_placeholder">Movie title…</string>
 </resources>
