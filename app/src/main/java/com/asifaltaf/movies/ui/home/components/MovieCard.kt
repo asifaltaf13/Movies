@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -30,7 +31,7 @@ fun MovieCard(
         modifier = modifier
             .testTag(Tags.MovieCard)
             .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         shape = RoundedCornerShape(16.dp),
         onClick = onCardClick
     ) {
@@ -47,18 +48,19 @@ fun MovieCard(
                 contentDescription = stringResource(id = R.string.poster),
                 contentScale = ContentScale.Crop,
                 alignment = Alignment.TopCenter,
+                error = painterResource(id = R.drawable.ic_broken_image)
             )
 
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f))
+                    .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.85f))
                     .align(Alignment.BottomStart)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 2.dp, bottom = 8.dp, start = 8.dp, end = 8.dp)
+                        .padding(top = 4.dp, bottom = 8.dp, start = 8.dp, end = 8.dp)
                 ) {
                     Text(
                         modifier = Modifier.align(CenterHorizontally),

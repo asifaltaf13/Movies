@@ -17,9 +17,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -27,6 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.asifaltaf.movies.R
+import com.asifaltaf.movies.ui.theme.Phosphate
 
 @Composable
 fun DetailsScreen(
@@ -37,37 +38,66 @@ fun DetailsScreen(
 
     val scrollState = rememberScrollState()
 
-    Surface(
-        modifier = Modifier.padding(16.dp),
-        shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.onPrimary,
-        shadowElevation = 8.dp
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(all = 16.dp)
-                .verticalScroll(scrollState)
+        Text(
+            text = stringResource(R.string.details),
+            fontFamily = Phosphate,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            style = MaterialTheme.typography.headlineMedium
+        )
+
+        Surface(
+            modifier = Modifier.padding(16.dp),
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.secondaryContainer,
+            shadowElevation = 8.dp
         ) {
-            AsyncImage(
+            Column(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(16.dp))
-                    .fillMaxSize(),
-                model = ImageRequest.Builder(context = LocalContext.current)
-                    .data(movie.posterUrl)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = stringResource(id = R.string.poster),
-                contentScale = ContentScale.Crop,
-            )
+                    .fillMaxWidth()
+                    .padding(all = 16.dp)
+            ) {
 
-            Column {
-                TitleProperty(movie.title)
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    shadowElevation = 8.dp
+                ){
+                    AsyncImage(
+                        modifier = Modifier.fillMaxSize(),
+                        model = ImageRequest.Builder(context = LocalContext.current)
+                            .data(movie.posterUrl)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = stringResource(id = R.string.poster),
+                        contentScale = ContentScale.Crop,
+                        error = painterResource(id = R.drawable.ic_broken_image)
+                    )
+                }
+                
+                Spacer(modifier = Modifier.padding(8.dp))
 
-                DetailProperty("Type", movie.type)
+                Surface(
+                    modifier = Modifier.padding(),
+                    shape = RoundedCornerShape(16.dp),
+                    shadowElevation = 8.dp,
+                    color = MaterialTheme.colorScheme.primaryContainer
+                ){
+                    Column(
+                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 24.dp),
+                    ) {
+                        TitleProperty(movie.title)
 
-                Spacer(modifier = Modifier.padding(bottom = 16.dp))
-                DetailProperty("Year", movie.year)
+                        DetailProperty("Type", movie.type)
+                        Spacer(modifier = Modifier.padding(bottom = 16.dp))
+                        DetailProperty("Year", movie.year)
+                    }
+                }
             }
         }
     }
@@ -85,6 +115,7 @@ fun TitleProperty(title: String) {
         Text(
             text = title,
             style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onSecondaryContainer,
             fontWeight = FontWeight.Bold,
         )
     }

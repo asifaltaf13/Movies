@@ -39,8 +39,8 @@ class MovieRepositoryTest {
 
         val sut = MovieRepository(dao, api) // system under test
 
-        val sutResult = sut.searchMovies(searchQuery, page.toInt())
-        assertEquals(sutResult.getOrThrow().movies.size, 3)
+        val sutResult = sut.loadMovies(searchQuery, page.toInt())
+        assertEquals(3, sutResult.getOrThrow().movies.size)
     }
 
     @Test
@@ -55,7 +55,7 @@ class MovieRepositoryTest {
 
         val sut = MovieRepository(dao, api) // system under test
 
-        val sutResult = sut.searchMovies(searchQuery, page.toInt())
+        val sutResult = sut.loadMovies(searchQuery, page.toInt())
         assert(sutResult.isFailure)
     }
 }

@@ -2,6 +2,10 @@ package com.asifaltaf.movies.di
 
 import android.app.Application
 import androidx.room.Room
+import coil.ImageLoader
+import coil.disk.DiskCache
+import coil.memory.MemoryCache
+import coil.request.CachePolicy
 import com.asifaltaf.movies.data.MovieRepository
 import com.asifaltaf.movies.data.data_source.MovieApi
 import com.asifaltaf.movies.data.data_source.MovieDatabase
@@ -51,5 +55,29 @@ object AppModule {
             dao = db.movieDao,
             api = api
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideImageLoader(
+        app: Application
+    ): ImageLoader {
+        return ImageLoader.Builder(context = app)
+            .crossfade(true)
+            .memoryCache {
+                MemoryCache.Builder(context = app)
+                    .maxSizePercent(0.25)
+                    .build()
+            }
+            .diskCache {
+                DiskCache.Builder()
+                    .directory(app.cacheDir.resolve("image_cache"))
+                    .maxSizePercent(0.025)
+                    .build()
+            }
+            .memoryCachePolicy(CachePolicy.ENABLED)
+            .diskCachePolicy(CachePolicy.ENABLED)
+            .respectCacheHeaders(false)
+            .build()
     }
 }

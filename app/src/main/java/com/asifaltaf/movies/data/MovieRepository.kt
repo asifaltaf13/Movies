@@ -12,27 +12,27 @@ class MovieRepository(
     private val api: MovieApi
 ) : MovieRepositoryAbstract {
 
-    // SELECT from database
     override fun selectAllMoviesFlow(): Flow<List<MovieEntity>> = dao.selectAllMoviesFlow()
-    override suspend fun selectMovieByImdbID(imdbID: String): MovieEntity? = dao.selectMovieByImdbID(imdbID)
+
+    override suspend fun selectMovieByImdbID(imdbID: String): MovieEntity? =
+        dao.selectMovieByImdbID(imdbID)
+
     override suspend fun deleteAllMovies() = dao.deleteAllMovies()
 
     // GET from api
-    override suspend fun searchMovies(searchQuery: String, page: Int): Result<OmdbSearch> {
+    override suspend fun loadMovies(searchQuery: String, page: Int): Result<OmdbSearch> {
         var errorMessage = "An unexpected error occurred"
+
         return try {
-            val response = api.searchMovies(searchQuery = searchQuery, page = page.toString())
-            val omdbSearch = response.body()
+            val retrofitResponse = api.searchMovies(searchQuery = searchQuery, page = page.toString())
+            val omdbSearch = retrofitResponse.body()
             when {
-                response.isSuccessful && omdbSearch != null && omdbSearch.response == "True" -> {
-                    val movies = omdbSearch.movies
-                    // update database
-                    for (movie in movies)
-                        dao.insertMovie(movie)
+                retrofitResponse.isSuccessful && omdbSearch != null && omdbSearch.response == "True" -> {
+                    dao.insertMovies(omdbSearch.movies)
                     Result.success(omdbSearch)
                 }
                 else -> {
-                    if(omdbSearch!=null)
+                    if (omdbSearch != null)
                         errorMessage = omdbSearch.error
                     Result.failure(Exception(errorMessage))
                 }

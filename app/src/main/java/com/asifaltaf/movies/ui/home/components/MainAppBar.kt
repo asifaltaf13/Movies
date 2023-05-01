@@ -1,6 +1,7 @@
 package com.asifaltaf.movies.ui.home.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -73,7 +74,7 @@ fun MainAppBar(
                     onClick = toggleShowDialog) {
                     Icon(
                         Icons.Outlined.Delete,
-                        contentDescription = stringResource(R.string.delete_all_records),
+                        contentDescription = stringResource(R.string.delete_all_loaded_movies),
                         tint = MaterialTheme.colorScheme.error
                     )
                 }
@@ -88,6 +89,7 @@ fun MainAppBar(
                     modifier = Modifier
                         .testTag(Tags.SearchAppBarText)
                         .fillMaxWidth()
+                        .padding(16.dp)
                         .focusRequester(focusRequester),
                     shape = RoundedCornerShape(64.dp),
                     value = searchQuery,
@@ -102,7 +104,7 @@ fun MainAppBar(
                             onClick = { toggleSearchBar() }) {
                             Icon(
                                 Icons.Outlined.Close,
-                                contentDescription = stringResource(R.string.clear_text),
+                                contentDescription = stringResource(R.string.search_app_bar_close),
                                 tint = MaterialTheme.colorScheme.error
                             )
                         }

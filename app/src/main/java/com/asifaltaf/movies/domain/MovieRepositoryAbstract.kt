@@ -11,5 +11,5 @@ interface MovieRepositoryAbstract {
     suspend fun selectMovieByImdbID(imdbID: String): MovieEntity?
     suspend fun deleteAllMovies()
     // GET from api
-    suspend fun searchMovies(searchQuery: String, page: Int): Result<OmdbSearch>
+    suspend fun loadMovies(searchQuery: String, page: Int): Result<OmdbSearch>
 }

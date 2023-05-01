@@ -50,12 +50,12 @@ class MovieDaoTest {
     @Test
     fun insertMovies_selectAllMovies_expectEqualSizes() = runBlocking {
         var value = "1"
-        dao.insertMovie(MovieEntity(value, value, value, value, value))
+        dao.insertMovies(listOf(MovieEntity(value, value, value, value, value)))
         value = "2"
 
         launch {
             delay(500)
-            dao.insertMovie(MovieEntity(value, value, value, value, value))
+            dao.insertMovies(listOf(MovieEntity(value, value, value, value, value)))
         }
 
         dao.selectAllMoviesFlow().test {
@@ -87,7 +87,8 @@ class MovieDaoTest {
                 "test type $index",
                 "test year $index"
             )
-        }.onEach { movie -> dao.insertMovie(movie) }
+        }
+        dao.insertMovies(movies)
         return movies
     }
 }

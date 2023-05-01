@@ -1,17 +1,18 @@
 package com.asifaltaf.movies.ui.home
 
+import app.cash.turbine.test
 import com.asifaltaf.movies.data.MovieRepository
 import com.asifaltaf.movies.domain.model.OmdbSearch
 import com.asifaltaf.movies.generateMovies
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -38,11 +39,11 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun searchMovies_correctTitle_expectedCorrectMoviesInResponse() = runTest {
+    fun loadMovies_correctTitle_expectedCorrectResponse() = runTest {
         val searchQuery = "Non empty title"
         val page = 1
 
-        Mockito.`when`(repository.searchMovies(searchQuery, page))
+        Mockito.`when`(repository.loadMovies(searchQuery, page))
             .thenReturn(Result.success(
                 OmdbSearch("False", "True", generateMovies(10), "30"))
             )
@@ -51,24 +52,46 @@ class HomeViewModelTest {
 
         sut.searchMovies()
         testDispatcher.scheduler.advanceUntilIdle()
-        val state = sut.state.value
+        val state = sut.searchState.value
 
-        assertEquals(10, state.movies.size)
         assertEquals(30, state.totalResults)
     }
 
     @Test
-    fun showLoadedMovies_expectedCorrectMoviesInResponse() = runTest {
-        val movies = generateMovies(3)
+    fun loadMovies_incorrectTitle_expectErrorMessageResponse() = runTest {
+        val searchQuery = "incorrectTitle"
+        val page = 1
 
-        Mockito.`when`(repository.selectAllMoviesFlow())
-            .thenReturn(flow{emit(movies)})
-
+        Mockito.`when`(repository.loadMovies(searchQuery, page))
+            .thenReturn(Result.failure(Exception("Error")))
         val sut = HomeViewModel(repository)
-        sut.showLoadedMovies()
-        testDispatcher.scheduler.advanceUntilIdle()
-        val state = sut.state.value
+        sut.changeSearchQuery(searchQuery)
 
-        assertEquals(3, state.movies.size)
+        sut.searchMovies()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        sut.toastMessage.test{
+            val toastMessage = awaitItem()
+            assertNotNull(toastMessage)
+        }
+    }
+
+    @Test
+    fun loadMovies_emptyTitle_expectErrorMessageResponse() = runTest {
+        val searchQuery = ""
+        val page = 1
+
+        Mockito.`when`(repository.loadMovies(searchQuery, page))
+            .thenReturn(Result.failure(Exception("Error")))
+        val sut = HomeViewModel(repository)
+        sut.changeSearchQuery(searchQuery)
+
+        sut.searchMovies()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        sut.toastMessage.test{
+            val toastMessage = awaitItem()
+            assertEquals("Movie title can not be empty", toastMessage)
+        }
     }
 }
