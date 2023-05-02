@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -48,15 +50,14 @@ fun DetailsScreen(
         Text(
             text = stringResource(R.string.details),
             fontFamily = Phosphate,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
-            style = MaterialTheme.typography.headlineMedium
+            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.titleLarge
         )
 
-        Surface(
+        Card(
             modifier = Modifier.padding(16.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
             shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.secondaryContainer,
-            shadowElevation = 8.dp
         ) {
             Column(
                 modifier = Modifier
@@ -64,9 +65,9 @@ fun DetailsScreen(
                     .padding(all = 16.dp)
             ) {
 
-                Surface(
+                Card(
                     shape = RoundedCornerShape(16.dp),
-                    shadowElevation = 8.dp
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 ){
                     AsyncImage(
                         modifier = Modifier.fillMaxSize(),

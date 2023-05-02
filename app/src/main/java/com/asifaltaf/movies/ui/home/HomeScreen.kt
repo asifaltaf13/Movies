@@ -1,7 +1,17 @@
+@file:OptIn(ExperimentalAnimationApi::class)
+
 package com.asifaltaf.movies.ui.home
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.Spring.DampingRatioMediumBouncy
+import androidx.compose.animation.core.Spring.StiffnessVeryLow
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,9 +35,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -52,7 +64,7 @@ fun HomeScreen(
     val toastMessage by viewModel.toastMessage.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val showDialog by viewModel.showDialog.collectAsState()
-    val isSearchExpanded by viewModel.isSearchExpanded.collectAsState()
+    val isSearchBarVisible by viewModel.isSearchBarVisible.collectAsState()
     val movies by viewModel.moviesFlow.collectAsState()
 
     val systemUiController = rememberSystemUiController()
@@ -65,10 +77,11 @@ fun HomeScreen(
         topBar = {
             Column {
                 MainAppBar(
-                    isSearchExpanded = isSearchExpanded,
+                    isSearchBarVisible = isSearchBarVisible,
                     toggleShowDialog = viewModel::toggleShowDialog,
-                    toggleSearchBar = viewModel::toggleSearchBar,
-                    searchMovies = viewModel::searchMovies,
+                    showSearchBar = viewModel::showSearchBar,
+                    hideSearchBar = viewModel::hideSearchBar,
+                    searchMovies = viewModel::searchMovies
                 )
 
                 if (isScrolled) Divider(color = MaterialTheme.colorScheme.tertiary)
@@ -79,40 +92,59 @@ fun HomeScreen(
         val moviesCount = movies.count()
 
         if (moviesPresent) {
-            LazyVerticalStaggeredGrid(
-                modifier = Modifier
-                    .padding(it)
-                    .padding(horizontal = 16.dp),
-                columns = StaggeredGridCells.Adaptive(160.dp),
-                state = gridState,
-                verticalItemSpacing = 16.dp,
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
 
-            ) {
-
-                itemsIndexed(movies) { _, movie ->
-                    MovieCard(modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
-                        movie = movie,
-                        onCardClick = {
-                            navController.navigate(
-                                Screen.DetailsScreen.route + "?imdbID=${movie.imdbID}"
+            AnimatedVisibility(
+                visibleState = viewModel.gridVisibleState,
+                enter = fadeIn() +
+                        slideInVertically(
+                            animationSpec = spring(
+                                stiffness = StiffnessVeryLow,
+                                dampingRatio = DampingRatioMediumBouncy
                             )
-                        })
-                }
+                        )
+            ) {
+                LazyVerticalStaggeredGrid(
+                    modifier = Modifier
+                        .padding(it)
+                        .padding(horizontal = 16.dp),
+                    columns = StaggeredGridCells.Adaptive(160.dp),
+                    state = gridState,
+                    verticalItemSpacing = 16.dp,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
 
-                if (searchState.totalResults > moviesCount) {
-                    item(span = StaggeredGridItemSpan.FullLine) {
-                        LoadMoreEntries(onClick = viewModel::searchMoviesNextPage)
+                    if(searchState.totalResults == 0) {
+                        item(span = StaggeredGridItemSpan.FullLine) {
+                            ShowingLoadedResults()
+                        }
                     }
-                }
 
-                if (searchState.totalResults > 0) {
-                    item(span = StaggeredGridItemSpan.FullLine) {
-                        ShowingEntries(moviesCount, searchState.totalResults)
+                    itemsIndexed(movies) { _, movie ->
+                        MovieCard(
+                            modifier = Modifier
+                                .padding(horizontal = 4.dp, vertical = 4.dp),
+                            movie = movie,
+                            onCardClick = {
+                                navController.navigate(
+                                    Screen.DetailsScreen.route + "?imdbID=${movie.imdbID}"
+                                )
+                                viewModel.hideSearchBar()
+                            })
                     }
-                } else {
-                    item(span = StaggeredGridItemSpan.FullLine) {
-                        ShowingLoadedResults()
+
+                    if (searchState.totalResults > moviesCount) {
+                        item(span = StaggeredGridItemSpan.FullLine) {
+                            LoadMoreEntries(
+                                enabled = !isLoading,
+                                onClick = viewModel::searchMoviesNextPage
+                            )
+                        }
+                    }
+
+                    if (searchState.totalResults > 0) {
+                        item(span = StaggeredGridItemSpan.FullLine) {
+                            ShowingEntries(moviesCount, searchState.totalResults)
+                        }
                     }
                 }
             }
@@ -123,9 +155,7 @@ fun HomeScreen(
     }
 
     if (isLoading) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        }
+        ShowLoading()
     }
 
     if (showDialog) {
@@ -138,13 +168,16 @@ fun HomeScreen(
 
     if (!toastMessage.isNullOrEmpty()) {
         Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
-        viewModel.clearToastMessage()
+        viewModel.resetToastMessage()
     }
 }
 
 @Composable
-fun LoadMoreEntries(onClick: () -> Unit) {
-    Button(onClick = onClick) {
+fun LoadMoreEntries(enabled: Boolean, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        enabled = enabled
+    ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(R.string.load_more_entries),
@@ -172,4 +205,21 @@ fun ShowingEntries(results: Int, totalResults: Int) {
             totalResults
         ), textAlign = TextAlign.Center
     )
+}
+
+@Composable
+fun ShowLoading() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Transparent),
+    ) {
+        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+    }
+}
+
+@Preview
+@Composable
+fun ShowLoadingPreview() {
+    ShowLoading()
 }

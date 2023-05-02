@@ -39,9 +39,10 @@ import com.asifaltaf.movies.ui.util.Tags
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun MainAppBar(
-    isSearchExpanded: Boolean,
+    isSearchBarVisible: Boolean,
     toggleShowDialog: () -> Unit,
-    toggleSearchBar: () -> Unit,
+    showSearchBar: () -> Unit,
+    hideSearchBar: () -> Unit,
     searchMovies: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -55,7 +56,7 @@ fun MainAppBar(
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
         title = {
-            if (!isSearchExpanded) {
+            if (!isSearchBarVisible) {
                 Text(
                     text = stringResource(R.string.app_name),
                     color = MaterialTheme.colorScheme.primary,
@@ -64,10 +65,11 @@ fun MainAppBar(
             }
         },
         actions = {
-            if (!isSearchExpanded) {
+            if (!isSearchBarVisible) {
                 IconButton(
                     modifier = Modifier.testTag(Tags.AppBarSearch),
-                    onClick = toggleSearchBar) {
+                    onClick = showSearchBar
+                ) {
                     Icon(
                         Icons.Outlined.Search,
                         contentDescription = stringResource(R.string.search),
@@ -99,14 +101,15 @@ fun MainAppBar(
                     shape = RoundedCornerShape(64.dp),
                     value = textFieldEntry,
                     onValueChange = {
-                        viewModel.changeTextFieldEntry(it)
+                        viewModel.setTextFieldEntry(it)
                     },
                     label = { Text(text = stringResource(R.string.omdb_search)) },
                     placeholder = { Text(text = stringResource(R.string.movie_title_placeholder)) },
                     leadingIcon = {
                         IconButton(
                             modifier = Modifier.testTag(Tags.SearchAppBarClose),
-                            onClick = { toggleSearchBar() }) {
+                            onClick = hideSearchBar
+                        ) {
                             Icon(
                                 Icons.Outlined.Close,
                                 contentDescription = stringResource(R.string.search_app_bar_close),

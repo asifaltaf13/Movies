@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -48,7 +47,7 @@ fun MovieCard(
                 contentDescription = stringResource(id = R.string.poster),
                 contentScale = ContentScale.Crop,
                 alignment = Alignment.TopCenter,
-                error = painterResource(id = R.drawable.ic_broken_image)
+                //error = painterResource(id = R.drawable.ic_broken_image)
             )
 
             Box(
@@ -60,7 +59,7 @@ fun MovieCard(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 4.dp, bottom = 8.dp, start = 8.dp, end = 8.dp)
+                        .padding(all = 8.dp)
                 ) {
                     Text(
                         modifier = Modifier.align(CenterHorizontally),

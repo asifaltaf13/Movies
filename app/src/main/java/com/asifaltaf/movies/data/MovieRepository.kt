@@ -20,6 +20,7 @@ class MovieRepository(
     override suspend fun deleteAllMovies() = dao.deleteAllMovies()
 
     // GET from api
+
     override suspend fun loadMovies(searchQuery: String, page: Int): Result<OmdbSearch> {
         var errorMessage = "An unexpected error occurred"
 

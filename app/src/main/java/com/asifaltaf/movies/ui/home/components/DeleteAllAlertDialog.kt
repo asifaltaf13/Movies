@@ -4,6 +4,8 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -23,16 +25,27 @@ fun DeleteAllAlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(text = stringResource(R.string.delete_all_loaded_movies)) },
         confirmButton = {
-            Button(onClick = {
-                onConfirm()
-                onDismiss()
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.all_loaded_movies_deleted),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }) {
+            Button(
+                onClick = {
+                    onConfirm()
+                    onDismiss()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.all_loaded_movies_deleted),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) {
                 Text(text = stringResource(R.string.yes))
             }
-        })
+        },
+        dismissButton = {
+            Button(onClick = {
+                onDismiss()
+            }) {
+                Text(text = stringResource(R.string.no))
+            }
+        }
+    )
 }

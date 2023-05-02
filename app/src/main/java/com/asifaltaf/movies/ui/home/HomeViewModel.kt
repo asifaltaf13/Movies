@@ -1,5 +1,6 @@
 package com.asifaltaf.movies.ui.home
 
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.asifaltaf.movies.data.MovieRepository
@@ -28,7 +29,7 @@ class HomeViewModel
     private val _textFieldEntry = MutableStateFlow("")
     private val _isLoading = MutableStateFlow(false)
     private val _showDialog = MutableStateFlow(false)
-    private val _isSearchExpanded = MutableStateFlow(false)
+    private val _isSearchBarVisible = MutableStateFlow(false)
     private val _toastMessage: MutableStateFlow<String?> = MutableStateFlow(null)
 
     val searchState = _searchState.asStateFlow()
@@ -36,23 +37,18 @@ class HomeViewModel
     val textFieldEntry = _textFieldEntry.asStateFlow()
     val isLoading = _isLoading.asStateFlow()
     val showDialog = _showDialog.asStateFlow()
-    val isSearchExpanded = _isSearchExpanded.asStateFlow()
+    val isSearchBarVisible = _isSearchBarVisible.asStateFlow()
     val toastMessage = _toastMessage.asStateFlow()
 
-    fun changeTextFieldEntry(value: String) {
-        _textFieldEntry.value = value
-    }
+    var gridVisibleState = gridVisibleState()
 
-    fun clearToastMessage() {
-        _toastMessage.value = null
-    }
-
-    fun deleteMovies() {
-        viewModelScope.launch { repository.deleteAllMovies() }
+    private fun gridVisibleState(): MutableTransitionState<Boolean> {
+        return MutableTransitionState(initialState = false).apply { targetState = true }
     }
 
     fun searchMovies() {
-        changeSearchQuery(textFieldEntry.value)
+        gridVisibleState = gridVisibleState()
+        setSearchQuery(textFieldEntry.value)
         deleteMovies()
         updateSearchState(page = 1, totalResults = 0)
         loadMovies()
@@ -63,15 +59,32 @@ class HomeViewModel
         loadMovies()
     }
 
+    fun deleteMovies() {
+        viewModelScope.launch { repository.deleteAllMovies() }
+    }
+
+    fun showSearchBar() {
+        _isSearchBarVisible.value = true
+    }
+
+    fun hideSearchBar() {
+        setTextFieldEntry("")
+        _isSearchBarVisible.value = false
+    }
+
+    fun setTextFieldEntry(value: String) {
+        _textFieldEntry.value = value
+    }
+
+    fun resetToastMessage() {
+        _toastMessage.value = null
+    }
+
     fun toggleShowDialog() {
         _showDialog.value = !showDialog.value
     }
 
-    fun toggleSearchBar() {
-        _isSearchExpanded.value = !isSearchExpanded.value
-    }
-
-    private fun changeSearchQuery(value: String) {
+    private fun setSearchQuery(value: String) {
         _searchQuery.value = value
     }
 
