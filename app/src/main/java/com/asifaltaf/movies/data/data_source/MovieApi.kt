@@ -23,6 +23,7 @@ interface MovieApi {
     @GET("/")
     suspend fun searchMovie(
         @Query("i") imdbID: String,
+        @Query("plot") plot: String = "full",
         @Query("apikey") apiKey: String = BuildConfig.API_KEY
     ): Response<MovieDetailEntity>
 

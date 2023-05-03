@@ -48,7 +48,7 @@ class HomeViewModel
 
     fun searchMovies() {
         gridVisibleState = gridVisibleState()
-        setSearchQuery(textFieldEntry.value)
+        setSearchQuery(textFieldEntry.value.trim())
         deleteMovies()
         updateSearchState(page = 1, totalResults = 0)
         loadMovies()
