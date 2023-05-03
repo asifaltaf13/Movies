@@ -10,6 +10,9 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,48 +23,54 @@ import com.asifaltaf.movies.ui.home.HomeScreen
 import com.asifaltaf.movies.ui.theme.MoviesTheme
 import com.asifaltaf.movies.ui.util.Screen
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            MoviesTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    val navController = rememberNavController()
 
-                    NavHost(
-                        modifier = Modifier
-                            .semantics {
-                                testTagsAsResourceId = true
-                            },
-                        navController = navController,
-                        startDestination = Screen.HomeScreen.route
-                    ) {
-
-                        composable(
-                            route = Screen.HomeScreen.route
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                setContent {
+                    MoviesTheme {
+                        // A surface container using the 'background' color from the theme
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = MaterialTheme.colorScheme.background
                         ) {
-                            HomeScreen(navController = navController)
-                        }
+                            val navController = rememberNavController()
 
-                        composable(
-                            route = Screen.DetailsScreen.route + "?imdbID={imdbID}",
-                            arguments = listOf(
-                                navArgument(
-                                    name = "imdbID"
+                            NavHost(
+                                modifier = Modifier
+                                    .semantics {
+                                        testTagsAsResourceId = true
+                                    },
+                                navController = navController,
+                                startDestination = Screen.HomeScreen.route
+                            ) {
+
+                                composable(
+                                    route = Screen.HomeScreen.route
                                 ) {
-                                    type = NavType.StringType
-                                    defaultValue = ""
+                                    HomeScreen(navController = navController)
                                 }
-                            )
-                        ) {
-                            DetailsScreen()
+
+                                composable(
+                                    route = Screen.DetailsScreen.route + "?imdbID={imdbID}",
+                                    arguments = listOf(
+                                        navArgument(
+                                            name = "imdbID"
+                                        ) {
+                                            type = NavType.StringType
+                                            defaultValue = ""
+                                        }
+                                    )
+                                ) {
+                                    DetailsScreen()
+                                }
+                            }
                         }
                     }
                 }
