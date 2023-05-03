@@ -46,6 +46,7 @@ import androidx.navigation.NavController
 import com.asifaltaf.movies.R
 import com.asifaltaf.movies.ui.home.components.DeleteAllAlertDialog
 import com.asifaltaf.movies.ui.home.components.MainAppBar
+import com.asifaltaf.movies.ui.home.components.MovieCard
 import com.asifaltaf.movies.ui.home.components.NoResults
 import com.asifaltaf.movies.ui.util.Screen
 import com.google.accompanist.systemuicontroller.rememberSystemUiController

@@ -1,4 +1,4 @@
-package com.asifaltaf.movies.ui.home
+package com.asifaltaf.movies.ui.home.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
