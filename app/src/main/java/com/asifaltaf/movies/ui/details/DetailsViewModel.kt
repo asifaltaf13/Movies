@@ -1,5 +1,6 @@
 package com.asifaltaf.movies.ui.details
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,8 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailsViewModel
 @Inject constructor(
-    private val repository: MovieRepository,
-    savedStateHandle: SavedStateHandle
+    private val repository: MovieRepository, savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _detailState = MutableStateFlow(DetailsState())
@@ -29,33 +29,58 @@ class DetailsViewModel
 
     init {
         val imdbID = savedStateHandle.get<String>("imdbID")
-        imdbID?.let { loadMovieDetail(imdbID = imdbID) }
+        imdbID?.let { showMovieDetail(imdbID = imdbID) }
     }
 
-    private fun loadMovieDetail(imdbID: String) {
+    private fun showMovieDetail(imdbID: String) {
         if (imdbID.isNotEmpty()) {
             viewModelScope.launch {
-                //show local movie
-                repository.selectMovieByImdbID(imdbID = imdbID)?.let {
-                    val movieDetail = MovieDetailEntity.fromMovie(it)
-                    updateMovieState(movieDetail = movieDetail)
+                showLocalMovieDetail(imdbID = imdbID)
+                if (isLoading()) {
+                    showLocalMoviePartial(imdbID = imdbID)
+                    loadRemoteMovieDetailAndShow(imdbID = imdbID)
                 }
-
-                //load remote details
-                val searchResult = repository.loadMovieDetail(imdbID = imdbID)
-                searchResult.fold(
-                    onSuccess = {
-                        _isLoading.value = false
-                    },
-                    onFailure = { throwable ->
-                        setToastMessage(throwable.message)
-                    }
-                )
-
-                //show local details
-                repository.selectMovieDetailByImdbID(imdbID = imdbID)?.let { updateMovieState(it) }
             }
         }
+    }
+
+    private suspend fun showLocalMovieDetail(imdbID: String) {
+        repository.selectMovieDetailByImdbID(imdbID = imdbID)?.let {
+            updateMovieState(it)
+            loaded()
+            Log.d("DetailsViewModel", "showing details locally")
+        }
+    }
+
+    private suspend fun showLocalMoviePartial(imdbID: String) {
+        repository.selectMovieByImdbID(imdbID = imdbID)?.let {
+            updateMovieState(MovieDetailEntity.fromMovie(it))
+            Log.d("DetailsViewModel", "showing partial movie locally")
+        }
+    }
+
+    private suspend fun loadRemoteMovieDetailAndShow(imdbID: String) {
+        val searchResult = repository.loadMovieDetail(imdbID = imdbID)
+        Log.d("DetailsViewModel", "loading details remotely")
+        searchResult.fold(
+            onSuccess = {
+                //show loaded details
+                repository.selectMovieDetailByImdbID(imdbID = imdbID)?.let {
+                    updateMovieState(it)
+                    loaded()
+                    Log.d("DetailsViewModel", "showing details locally")
+                }
+            },
+            onFailure = { throwable -> setToastMessage(throwable.message) }
+        )
+    }
+
+    private fun isLoading(): Boolean {
+        return isLoading.value
+    }
+
+    private fun loaded() {
+        _isLoading.value = false
     }
 
     private fun updateMovieState(movieDetail: MovieDetailEntity) {
