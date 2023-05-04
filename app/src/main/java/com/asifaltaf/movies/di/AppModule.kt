@@ -9,6 +9,7 @@ import coil.request.CachePolicy
 import com.asifaltaf.movies.data.MovieRepository
 import com.asifaltaf.movies.data.data_source.MovieApi
 import com.asifaltaf.movies.data.data_source.MovieDatabase
+import com.asifaltaf.movies.domain.MovieRepositoryAbstract
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -50,7 +51,7 @@ object AppModule {
     fun provideMovieRepository(
         db: MovieDatabase,
         api: MovieApi
-    ): MovieRepository {
+    ): MovieRepositoryAbstract {
         return MovieRepository(
             dao = db.movieDao,
             api = api

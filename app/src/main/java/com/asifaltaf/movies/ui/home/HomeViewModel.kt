@@ -3,7 +3,7 @@ package com.asifaltaf.movies.ui.home
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.asifaltaf.movies.data.MovieRepository
+import com.asifaltaf.movies.domain.MovieRepositoryAbstract
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel
 @Inject constructor(
-    private val repository: MovieRepository,
+    private val repository: MovieRepositoryAbstract,
 ) : ViewModel() {
 
     private var loadMoviesJob: Job? = null

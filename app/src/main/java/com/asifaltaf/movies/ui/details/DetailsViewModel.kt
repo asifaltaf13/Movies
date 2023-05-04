@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.asifaltaf.movies.data.MovieRepository
+import com.asifaltaf.movies.domain.MovieRepositoryAbstract
 import com.asifaltaf.movies.domain.model.MovieDetailEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +15,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailsViewModel
 @Inject constructor(
-    private val repository: MovieRepository, savedStateHandle: SavedStateHandle
+    private val repository: MovieRepositoryAbstract,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _detailState = MutableStateFlow(DetailsState())

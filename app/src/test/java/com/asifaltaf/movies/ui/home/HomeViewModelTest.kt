@@ -1,7 +1,7 @@
 package com.asifaltaf.movies.ui.home
 
 import app.cash.turbine.test
-import com.asifaltaf.movies.data.MovieRepository
+import com.asifaltaf.movies.domain.MovieRepositoryAbstract
 import com.asifaltaf.movies.domain.model.OmdbSearch
 import com.asifaltaf.movies.generateMovies
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +25,7 @@ class HomeViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
 
     @Mock
-    lateinit var repository: MovieRepository
+    lateinit var repository: MovieRepositoryAbstract
 
     @Before
     fun setUp() {
