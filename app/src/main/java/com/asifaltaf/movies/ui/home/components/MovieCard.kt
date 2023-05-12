@@ -1,13 +1,26 @@
 package com.asifaltaf.movies.ui.home.components
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -26,12 +39,20 @@ fun MovieCard(
     movie: MovieEntity,
     onCardClick: () -> Unit = {}
 ) {
+    val scaleAnimation = remember { Animatable(1f) }
+    LaunchedEffect(Unit) {
+        scaleAnimation.animateTo(
+            targetValue = 1.1f,
+            animationSpec = tween(durationMillis = 5_000, easing = LinearEasing)
+        )
+    }
+
     Card(
         modifier = modifier
             .testTag(Tags.MovieCard)
             .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.medium,
         onClick = onCardClick
     ) {
         Box(
@@ -39,7 +60,7 @@ fun MovieCard(
             contentAlignment = Alignment.Center
         ) {
             AsyncImage(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().scale(scaleAnimation.value),
                 model = ImageRequest.Builder(context = LocalContext.current)
                     .data(movie.posterUrl)
                     .crossfade(500)

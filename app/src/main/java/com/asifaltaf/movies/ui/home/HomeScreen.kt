@@ -42,7 +42,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.asifaltaf.movies.R
 import com.asifaltaf.movies.ui.home.components.DeleteAllAlertDialog
 import com.asifaltaf.movies.ui.home.components.MainAppBar
@@ -56,7 +56,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 )
 @Composable
 fun HomeScreen(
-    navController: NavController,
+    navController: NavHostController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -96,13 +96,12 @@ fun HomeScreen(
 
             AnimatedVisibility(
                 visibleState = viewModel.gridVisibleState,
-                enter = fadeIn() +
-                        slideInVertically(
-                            animationSpec = spring(
-                                stiffness = StiffnessVeryLow,
-                                dampingRatio = DampingRatioMediumBouncy
-                            )
-                        )
+                enter = fadeIn() + slideInVertically(
+                    animationSpec = spring(
+                        stiffness = StiffnessVeryLow,
+                        dampingRatio = DampingRatioMediumBouncy
+                    )
+                )
             ) {
                 LazyVerticalStaggeredGrid(
                     modifier = Modifier
@@ -114,7 +113,7 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
 
-                    if(searchState.totalResults == 0) {
+                    if (searchState.totalResults == 0) {
                         item(span = StaggeredGridItemSpan.FullLine) {
                             ShowingLoadedResults()
                         }
@@ -122,12 +121,10 @@ fun HomeScreen(
 
                     itemsIndexed(movies) { _, movie ->
                         MovieCard(
-                            modifier = Modifier
-                                .padding(horizontal = 4.dp, vertical = 4.dp),
                             movie = movie,
                             onCardClick = {
                                 navController.navigate(
-                                    Screen.DetailsScreen.route + "?imdbID=${movie.imdbID}"
+                                    route = Screen.DetailsScreen.route + "?imdbID=${movie.imdbID}"
                                 )
                                 viewModel.hideSearchBar()
                             })

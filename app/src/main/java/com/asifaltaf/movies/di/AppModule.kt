@@ -29,7 +29,7 @@ object AppModule {
             app,
             MovieDatabase::class.java,
             MovieDatabase.DATABASE_NAME
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 
     @Provides

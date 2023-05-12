@@ -36,16 +36,14 @@ fun NoResults() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val rotateAnimationDuration = 2*60*1000
-            val infiniteTransition = rememberInfiniteTransition()
+            val infiniteTransition = rememberInfiniteTransition(label = "")
             val rotateAnimationDegrees by infiniteTransition.animateFloat(
                 initialValue = 0f,
                 targetValue = 360f,
                 animationSpec = infiniteRepeatable(
-                    animation = tween(
-                        durationMillis = rotateAnimationDuration,
-                        easing = LinearEasing
-                    )
-                )
+                    animation = tween(durationMillis = rotateAnimationDuration, easing = LinearEasing)
+                ),
+                label = "No Results"
             )
 
             Image(
