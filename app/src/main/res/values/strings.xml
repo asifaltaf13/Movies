@@ -10,8 +10,8 @@
     <string name="all_loaded_movies_deleted">All loaded entries deleted.</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="omdb_search">OMDb Search</string>
-    <string name="movie_title_placeholder">Movie title…</string>
+    <string name="omdb_search">Search</string>
+    <string name="movie_title_placeholder">Enter the title here…</string>
     <string name="showing_loaded_results">Showing loaded entries</string>
     <string name="details">Details</string>
 </resources>

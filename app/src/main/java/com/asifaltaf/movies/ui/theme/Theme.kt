@@ -9,7 +9,6 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private var LightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -91,11 +90,6 @@ fun MoviesTheme(
         darkTheme -> DarkColors
         else -> LightColors
     }
-
-    val systemUiController = rememberSystemUiController()
-    systemUiController.setSystemBarsColor(
-        if (darkTheme) DarkColors.surface else LightColors.surface
-    )
 
     MaterialTheme(
         colorScheme = colors, typography = Typography, shapes = Shapes, content = content
